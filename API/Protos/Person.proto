@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option csharp_namespace = "API.Protos";
+
+message PersonGetByIdRequest {
+	int32 Id = 1;
+}
+
+message PersonResponse {
+	optional string FirstName = 1;
+    optional	string LastName = 2;
+    optional	string Suffix = 3;
+    optional	string Email = 4;
+	optional string AdditionalContactInfo = 5;
+	
+
+}
+
+message ItemPersonResponse {
+    repeated PersonResponse PersonResponses = 1;
+}
+message Empty {}
+service PersonService {
+	rpc PersonGetById(PersonGetByIdRequest) returns (PersonResponse);
+	rpc  PersonGetall( Empty ) returns (ItemPersonResponse);
+}
+
