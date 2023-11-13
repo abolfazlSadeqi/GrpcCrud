@@ -1,8 +1,17 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
 option csharp_namespace = "API.Protos";
 
 message PersonGetByIdRequest {
+	int32 Id = 1;
+}
+
+message ChangeResponse {
+	string message = 1;
+	string statuscode = 2;
+}
+message RemoveRequest {
 	int32 Id = 1;
 }
 
@@ -12,8 +21,25 @@ message PersonResponse {
     optional	string Suffix = 3;
     optional	string Email = 4;
 	optional string AdditionalContactInfo = 5;
-	
+	google.protobuf.Timestamp   CreateDate = 6;
+	google.protobuf.Timestamp   ModifiedDate = 7;	
+}
 
+message PersonInsertRequest {
+	 string FirstName = 1;
+    	string LastName = 2;
+    	string Suffix = 3;
+    	string Email = 4;
+	 string AdditionalContactInfo = 5;
+}
+
+message PersonUpdateRequest {
+	 int32 Id=1;
+	 string FirstName = 2;
+     string LastName = 3;
+     string Suffix = 4;
+     string Email = 5;
+	 string AdditionalContactInfo = 6;
 }
 
 message ItemPersonResponse {
@@ -23,5 +49,12 @@ message Empty {}
 service PersonService {
 	rpc PersonGetById(PersonGetByIdRequest) returns (PersonResponse);
 	rpc  PersonGetall( Empty ) returns (ItemPersonResponse);
+
+	rpc  InsertToPersons(PersonInsertRequest) returns (ChangeResponse);
+
+	rpc  UpdatePerson(PersonUpdateRequest) returns (ChangeResponse);
+
+	rpc  RemovePersons(RemoveRequest) returns (ChangeResponse);
+
 }
 

@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 namespace DAL.Repository;
 public interface IPersonRepository : IGenericRepository<Person>
 {
-   
+    
 }
