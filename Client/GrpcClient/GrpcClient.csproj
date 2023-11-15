@@ -18,6 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Protobuf Include="..\..\API\Protos\Auth.proto" GrpcServices="Client">
+      <Link>Protos\Auth.proto</Link>
+    </Protobuf>
     <Protobuf Include="..\..\API\Protos\Person.proto" GrpcServices="Client">
       <Link>Protos\Person.proto</Link>
     </Protobuf>

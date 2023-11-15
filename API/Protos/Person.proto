@@ -7,9 +7,27 @@ message PersonGetByIdRequest {
 	int32 Id = 1;
 }
 
+enum statusresultenum {
+  Sucess = 0;
+  Fail = 1;
+}
+
+message oneofTest {
+  int32 id = 1;
+  oneof TypeName {
+    string FirstName = 2;
+    string LastName = 3;
+  }
+}
+message mapTest {
+  int32 id = 1;
+   map<string, int32> Data = 2;
+}
+
+
 message ChangeResponse {
 	string message = 1;
-	string statuscode = 2;
+	statusresultenum statusresult = 2;
 }
 message RemoveRequest {
 	int32 Id = 1;
@@ -41,6 +59,9 @@ message PersonUpdateRequest {
      string Email = 5;
 	 string AdditionalContactInfo = 6;
 }
+
+
+
 
 message ItemPersonResponse {
     repeated PersonResponse PersonResponses = 1;

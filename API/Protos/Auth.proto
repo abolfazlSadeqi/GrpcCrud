@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option csharp_namespace = "API.Protos";
+
+package authentication;
+
+message AuthRequest{
+	string UserName = 1;
+	string Password = 2;
+}
+
+message AuthResponse{
+	string Token = 1;
+	int32 Expires = 2;
+}
+
+service AuthService {
+	rpc CheckAuth(AuthRequest) returns (AuthResponse);
+
+}

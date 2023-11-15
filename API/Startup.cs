@@ -1,24 +1,16 @@
 ﻿
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using API.Dto;
 using AutoMapper;
 using DAL.Contexts;
 using DAL.Repository;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using API.GrpcServices;
+using API.Classes;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Entities;
 
 namespace API;
 
@@ -33,24 +25,30 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
-        services.AddHttpContextAccessor();
-
 
         services.AddGrpc();
 
-        services.AddControllers();
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        //add Interceptor
+        //services.AddGrpc(options =>
+        //{
+        //    options.Interceptors.Add<ServerTestInterceptor>();
+        //});
 
+        //Add the default identity system configuration for the specified User and Role types.
+        services.AddIdentity<ApplicationUser, ApplicationRole>()
+                        .AddEntityFrameworkStores<TestCurdContext>()
+                        .AddDefaultTokenProviders();
 
-
-        // Add services to the container.
         services.AddDbContext<TestCurdContext>(options =>
         {
-            options.UseSqlServer( Configuration.GetConnectionString("TestCurdContextConnection"));
+            options.UseSqlServer(Configuration.GetConnectionString("TestCurdContextConnection"));
         });
 
+
+        HelperAuthentication.ConfigureService(services, Configuration);
+       
+
+        services.AddAuthorization();
 
         services.AddTransient<IUnitOfWork, UnitOfWork>();
 
@@ -63,7 +61,6 @@ public class Startup
 
         IMapper mapper = mapperConfig.CreateMapper();
         services.AddSingleton(mapper);
-
 
 
     }
@@ -81,29 +78,20 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
-        
-        //app.UseHttpsRedirection();
+
         app.UseRouting();
+        app.UseAuthentication();
         app.UseAuthorization();
-        app.UseSwagger();
 
 
-        app.UseSwagger();
-        //app.UseSwaggerUI();
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            c.RoutePrefix = "";
-        });
-        
         app.UseEndpoints(endpoints =>
         {
-           // endpoints.MapControllers();
-           // endpoints.MapGrpcService<CalculatorGrpcService>();
+
             endpoints.MapGrpcService<PersonGrpcService>();
+            endpoints.MapGrpcService<AuthGrpcService>();
 
         });
-        // Configure the HTTP request pipeline.
+
 
     }
 }

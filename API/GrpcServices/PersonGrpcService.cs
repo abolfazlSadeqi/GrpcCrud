@@ -5,6 +5,7 @@ using DAL.Model;
 using DAL.Repository;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Microsoft.AspNetCore.Authorization;
 using System;
 
 namespace API.GrpcServices;
@@ -19,7 +20,7 @@ public class PersonGrpcService : PersonService.PersonServiceBase
         _mapper = mapper;
     }
 
-
+    [Authorize(Roles = "PersondataRole")]
     public override Task<PersonResponse> PersonGetById(PersonGetByIdRequest request, ServerCallContext context)
     {
 
@@ -41,10 +42,11 @@ public class PersonGrpcService : PersonService.PersonServiceBase
        
         return Task.FromResult(personGetByIdResponse);
     }
-
-    public override Task<ItemPersonResponse> PersonGetall(Empty request, ServerCallContext context)
+    [Authorize(Roles = "PersondataRole")]
+    public override Task<ItemPersonResponse> PersonGetall(Protos.Empty request, ServerCallContext context)
     {
-        ItemPersonResponse ItemPersonResponses = new ItemPersonResponse();
+      
+         ItemPersonResponse ItemPersonResponses = new ItemPersonResponse();
         var _list = unitOfWork.Person.GetAll();
         foreach (var item in _list)
         {
@@ -65,7 +67,7 @@ public class PersonGrpcService : PersonService.PersonServiceBase
     }
 
 
-
+    [Authorize(Roles = "PersondataRole")]
     public override Task<ChangeResponse> InsertToPersons(Protos.PersonInsertRequest request, ServerCallContext context)
     {
         try
@@ -84,14 +86,15 @@ public class PersonGrpcService : PersonService.PersonServiceBase
             });
             unitOfWork.Save();
 
-            return Task.FromResult(new ChangeResponse() { Message = "success", Statuscode = "0" });
+            return Task.FromResult(new ChangeResponse() { Message = "", Statusresult = statusresultenum.Sucess });
         }
-        catch
+        catch(Exception ex)
         {
-            return Task.FromResult(new ChangeResponse() { Message = "error", Statuscode = "-1" });
+            return Task.FromResult(new ChangeResponse() { Message = ex.Message, Statusresult = statusresultenum.Fail });
         }
     }
 
+    [Authorize(Roles = "test")]
     public override Task<ChangeResponse> UpdatePerson(Protos.PersonUpdateRequest request, ServerCallContext context)
     {
         try
@@ -109,15 +112,15 @@ public class PersonGrpcService : PersonService.PersonServiceBase
             unitOfWork.Save();
 
 
-            return Task.FromResult(new ChangeResponse() { Message = "success", Statuscode = "0" });
+            return Task.FromResult(new ChangeResponse() { Message = "", Statusresult = statusresultenum.Sucess });
         }
-        catch
+        catch(Exception ex)
         {
-            return Task.FromResult(new ChangeResponse() { Message = "error", Statuscode = "-1" });
+            return Task.FromResult(new ChangeResponse() { Message = ex.Message, Statusresult = statusresultenum.Fail });
         }
     }
 
-
+    [Authorize(Roles = "PersondataRole")]
     public override Task<ChangeResponse> RemovePersons(Protos.RemoveRequest request, ServerCallContext context)
     {
         try
@@ -127,11 +130,11 @@ public class PersonGrpcService : PersonService.PersonServiceBase
             unitOfWork.Save();
 
 
-            return Task.FromResult(new ChangeResponse() { Message = "success", Statuscode = "0" });
+            return Task.FromResult(new ChangeResponse() { Message = "", Statusresult = statusresultenum.Sucess });
         }
-        catch
+        catch (Exception ex)
         {
-            return Task.FromResult(new ChangeResponse() { Message = "error", Statuscode = "-1" });
+            return Task.FromResult(new ChangeResponse() { Message = ex.Message, Statusresult = statusresultenum.Fail });
         }
     }
 }
