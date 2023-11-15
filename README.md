@@ -1,4 +1,4 @@
-Create a simple CRUD application with Groc  :
+Create a simple CRUD application with Grpc  :
 
 
 ## Definition 
